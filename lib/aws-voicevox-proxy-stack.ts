@@ -11,7 +11,7 @@ export class AwsVoicevoxProxyStack extends cdk.Stack {
         const apiFunc = new lambda.DockerImageFunction(this, "ApiFunc", {
             code: lambda.DockerImageCode.fromImageAsset(path.resolve(__dirname, "../src/lambdas/ApiFunc/")),
             logRetention: logs.RetentionDays.ONE_WEEK,
-            memorySize: 2048,
+            memorySize: 10240,
             timeout: cdk.Duration.seconds(30),
         });
         const url = apiFunc.addFunctionUrl({
