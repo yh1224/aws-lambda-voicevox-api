@@ -1,5 +1,5 @@
 {
-  "app": "npx ts-node --prefer-ts-exts bin/aws-voicevox-proxy.ts",
+  "app": "npx ts-node --prefer-ts-exts bin/aws-lambda-voicevox-api.ts",
   "watch": {
     "include": [
       "**"

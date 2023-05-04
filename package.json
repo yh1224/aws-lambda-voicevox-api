@@ -1,8 +1,8 @@
 {
-  "name": "aws-voicevox-proxy",
+  "name": "aws-lambda-voicevox-api",
   "version": "0.1.0",
   "bin": {
-    "aws-voicevox-proxy": "bin/aws-voicevox-proxy.js"
+    "aws-lambda-voicevox-api": "bin/aws-lambda-voicevox-api.js"
   },
   "scripts": {
     "build": "tsc",

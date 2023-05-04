@@ -4,7 +4,7 @@ import * as logs from "aws-cdk-lib/aws-logs";
 import {Construct} from "constructs";
 import * as path from "path";
 
-export class AwsVoicevoxProxyStack extends cdk.Stack {
+export class AwsLambdaVoicevoxApiStack extends cdk.Stack {
     constructor(scope: Construct, id: string, props?: cdk.StackProps) {
         super(scope, id, props);
 
