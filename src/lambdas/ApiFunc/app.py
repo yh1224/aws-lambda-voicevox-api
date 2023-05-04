@@ -1,23 +1,17 @@
 import base64
-import ctypes
+import io
 import os
-from pathlib import Path
+from tempfile import NamedTemporaryFile
 from urllib import parse
 
 from pydub import AudioSegment
+from voicevox_core import VoicevoxCore, AccelerationMode
 
-VOICEBOX_DIR = "voicevox_core-linux-x64-cpu-0.14.3"
-OPEN_JTALK_DICT_DIR = "open_jtalk_dic_utf_8-1.11"
-ctypes.cdll.LoadLibrary(os.getcwd() + f"/{VOICEBOX_DIR}/libvoicevox_core.so")
-ctypes.cdll.LoadLibrary(os.getcwd() + f"/{VOICEBOX_DIR}/libonnxruntime.so.1.13.1")
-from voicevox_core import VoicevoxCore
-
-ACCELERATION_MODE = "AUTO"
 SPEAKER_ID = 0
 
 core = VoicevoxCore(
-    acceleration_mode=ACCELERATION_MODE,
-    open_jtalk_dict_dir=OPEN_JTALK_DICT_DIR,
+    acceleration_mode=AccelerationMode.AUTO,
+    open_jtalk_dict_dir=os.environ["OPEN_JTALK_DICT_DIR"],
 )
 core.load_model(SPEAKER_ID)
 
@@ -33,21 +27,23 @@ def lambda_handler(event, context):
     text = texts[0]
     print(f"text: {text}")
 
-    voice = get_voice(text)
+    mp3 = wav_to_mp3(get_voice(text))
     return {
         "statusCode": 200,
         "headers": {
             "Content-Type": "audio/mp3",
         },
-        "body": base64.b64encode(voice),
+        "body": base64.b64encode(mp3),
         "isBase64Encoded": True,
     }
 
 
 def get_voice(text: str) -> bytes:
     audio_query = core.audio_query(text, SPEAKER_ID)
-    wav = core.synthesis(audio_query, SPEAKER_ID)
-    Path("/tmp/voice.wav").write_bytes(wav)
-    AudioSegment.from_wav("/tmp/voice.wav").export("/tmp/voice.mp3", format="mp3")
-    with open("/tmp/voice.mp3", "rb") as f:
+    return core.synthesis(audio_query, SPEAKER_ID)
+
+
+def wav_to_mp3(wav: bytes) -> bytes:
+    with NamedTemporaryFile() as f:
+        AudioSegment.from_wav(io.BytesIO(wav)).export(f.name, format="mp3")
         return f.read()
